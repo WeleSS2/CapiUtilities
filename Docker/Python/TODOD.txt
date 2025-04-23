@@ -1,0 +1,3 @@
+Stworz core do tworzenia apek i libow
+Skrypt startowy pobierajacy i robiacy srodowiska pod kivi, flaska i pyqt + inne
+Skrypt kompilujacy maina z folderu apki/sciezki, wszystkie apki.
