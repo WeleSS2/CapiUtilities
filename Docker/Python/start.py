@@ -4,12 +4,16 @@ import sys
 import json
 
 argList = []
-venvList = []
+
 nameVenv = ""
 nameExists = False
 
 debug = True
 debugLevel = 4
+
+venvInstall = []
+venvExists = False
+venvPath = ""
 
 def log(message, *args):
     if debug:
@@ -40,6 +44,25 @@ def generateAuthVenv():
     return
 
 def generateAdditionalPackages():
+    return
+
+def generateVenv(name, location):
+    # Create the virtual environment
+    venv_path = os.path.join("/app-manager/pvenv/", name.replace(" ", "_"))
+    python_executable = sys.executable
+    command = f'{python_executable} -m venv {venv_path}'
+
+    generalLog("Command: %s", command)
+
+    # Run the command to create the virtual environment
+    if os.system(command) != 0:
+        generalLog("Failed to create virtual environment")
+        return
+    else:
+        generalLog("Virtual environment created successfully")
+        venvExists = True
+        venvPath.append(venv_path)
+
     return
 
 # ----------------------------------------------------------------------------
@@ -81,6 +104,8 @@ def transformArgs(args):
 
     generalLog("Arguments: " + str(argList))
 
+
+
 def initWorkspace(args):
     if len(args) == 0:
         generalLog("No arguments provided")
@@ -89,17 +114,28 @@ def initWorkspace(args):
     transformArgs(args)
 
     for arg in argList:
+        debugLog("Argument: " + arg)
+        debugLog("Arglist: " + str(argList))
+
         if arg == "--name":
             nameVenv = argList[argList.index(arg) + 1]
             nameExists = True
             generalLog("Name: %s", nameVenv)
-        else:
-            generalLog("Missing name, exiting")
-            exit(-1)
+
+    if nameExists:
+        generalLog("Name exists")
+        generateVenv(nameVenv, "/app-manager/pvenv")
+    else:
+        generalLog("Name does not exist")
+        exit(-1)
+
+    if venvExists is False:
+        generalLog("Failed to generate venv")
+        exit(-1)
 
     for arg in argList:
         pos = argList.index(arg)
-        
+
         if arg == "--web":
             generateWebVenv()
 
