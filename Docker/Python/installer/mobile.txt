@@ -1,0 +1,6 @@
+kivy==2.1.0
+buildozer==1.4.2
+python-for-android==1.10.0
+
+requests
+pillow
