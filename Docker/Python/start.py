@@ -38,7 +38,8 @@ def generateDesktopVenv():
     return
 
 def generateMobileVenv():
-    return
+    installer = os.path.join(os.path.dirname(__file__), "installer", "mobile.txt")
+    return generateVenv("mobile", installer)
 
 def generateAuthVenv():
     return
