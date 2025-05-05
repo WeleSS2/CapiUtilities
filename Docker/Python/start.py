@@ -3,13 +3,15 @@ import os
 import sys
 import json
 
+# Things are disable which interact with OS, they are marked as $ENABLE11
+
 argList = []
 
 nameVenv = ""
 nameExists = False
 
 debug = True
-debugLevel = 4
+debugLevel = 5
 
 venvInstall = []
 venvExists = False
@@ -29,9 +31,12 @@ def debugLog(message, *args):
 
 # ----------------------------------------------------------------------------
 
-def generateWebVenv():
+def generateWebFVenv():
     
     
+    return
+
+def generateWebDVenv():
     return
 
 def generateDesktopVenv():
@@ -47,6 +52,7 @@ def generateAdditionalPackages():
     return
 
 def generateVenv(name, location):
+    global venvExists, venvPath
     # Create the virtual environment
     venv_path = os.path.join("/app-manager/pvenv/", name.replace(" ", "_"))
     python_executable = sys.executable
@@ -68,6 +74,7 @@ def generateVenv(name, location):
 # ----------------------------------------------------------------------------
 
 def transformArgs(args):
+    global argList
     generalLog("Transforming args")
 
     for arg in args:
@@ -107,6 +114,8 @@ def transformArgs(args):
 
 
 def initWorkspace(args):
+    global nameExists, nameVenv, venvExists, venvPath
+    global argList
     if len(args) == 0:
         generalLog("No arguments provided")
         return
@@ -124,7 +133,7 @@ def initWorkspace(args):
 
     if nameExists:
         generalLog("Name exists")
-        generateVenv(nameVenv, "/app-manager/pvenv")
+        #generateVenv(nameVenv, "/app-manager/pvenv") # $ENABLE11 
     else:
         generalLog("Name does not exist")
         exit(-1)
@@ -136,8 +145,11 @@ def initWorkspace(args):
     for arg in argList:
         pos = argList.index(arg)
 
-        if arg == "--web":
-            generateWebVenv()
+        if arg == "--webd":
+            generateWebDVenv()
+
+        elif arg == "--webf":
+            generateWebFVenv()
 
         elif arg == "--desktop":
             generateDesktopVenv()
@@ -147,28 +159,10 @@ def initWorkspace(args):
         
         elif arg == "--auth":
             generateAuthVenv()
-        
-        elif arg == "--all":
-            generateWebVenv()
-            generateDesktopVenv()
-            generateMobileVenv()
-            generateAuthVenv()
 
         elif arg == "--add":
             generateAdditionalPackages()
-            
 
-    location = "/app-manager/pvenv"
-
-
-    
-    #venv_path = os.path.join(location, envName.replace(" ", "_"))
-    #python_executable = sys.executable
-    #command = f'{python_executable} -m {envName} {venv_path}'
-
-    # Run the command to create the virtual environment
-    #os.system(command)
-    
     return
 
 def main(args):
@@ -194,8 +188,6 @@ def main(args):
         return
         
 main(sys.argv)
-
-        
 
 # Get the location from the command-line argument
 #location = "/app-manager/pvenv"
