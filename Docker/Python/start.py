@@ -2,6 +2,7 @@
 import os
 import sys
 import json
+import subprocess
 
 argList = []
 
@@ -30,22 +31,24 @@ def debugLog(message, *args):
 # ----------------------------------------------------------------------------
 
 def generateWebVenv():
-    
-    
-    return
+    installer = os.path.join(os.path.dirname(__file__), "installer", "web.txt")
+    return generateVenv("web", installer)
 
 def generateDesktopVenv():
-    return
+    installer = os.path.join(os.path.dirname(__file__), "installer", "desktop.txt")
+    return generateVenv("desktop", installer)
 
 def generateMobileVenv():
     installer = os.path.join(os.path.dirname(__file__), "installer", "mobile.txt")
     return generateVenv("mobile", installer)
 
 def generateAuthVenv():
-    return
+    installer = os.path.join(os.path.dirname(__file__), "installer", "auth.txt")
+    return generateVenv("auth", installer)
 
 def generateAdditionalPackages():
-    return
+    installer = os.path.join(os.path.dirname(__file__), "installer", "add.txt")
+    return installPackagesFromFile(installer)
 
 def generateVenv(name, location):
     # Create the virtual environment
@@ -65,6 +68,39 @@ def generateVenv(name, location):
         venvPath.append(venv_path)
 
     return
+
+# ----------------------------------------------------------------------------
+
+def installPackagesFromFile(installer_file, venv_dir=None):
+    generalLog("Installing packages from %s", installer_file)
+
+    if not os.path.isfile(installer_file):
+        generalLog("File not found: %s", installer_file)
+        return False
+
+    with open(installer_file, encoding="utf-8") as f:
+        lines = f.read().splitlines()
+    packages = [line for line in lines if line and not line.startswith("#")]
+
+    if not packages:
+        generalLog("No packages to install in %s", installer_file)
+        return True
+
+    if venv_dir:
+        pip_executable = os.path.join(venv_dir, "bin", "pip")
+        cmd = [pip_executable, "install"] + packages
+    else:
+        cmd = [sys.executable, "-m", "pip", "install"] + packages
+
+    generalLog("Running command: %s", " ".join(cmd))
+
+    retcode = subprocess.call(cmd)
+    if retcode == 0:
+        generalLog("Successfully installed packages from %s", installer_file)
+        return True
+    else:
+        generalLog("pip install returned code %d", retcode)
+        return False
 
 # ----------------------------------------------------------------------------
 
