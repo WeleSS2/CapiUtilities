@@ -5,8 +5,7 @@
 
 from PySide6.QtWidgets import QApplication, QWidget, QPushButton
 from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QPainter, QColor, QRegion
-
+from PySide6.QtGui import QPainter, QColor, QRegion, QGuiApplication
 
 
 class ToggleWindow(QWidget):
@@ -16,14 +15,24 @@ class ToggleWindow(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setMouseTracking(True)
-        self.setFixedSize(800, 800)
+
+        screen_geometry = QGuiApplication.primaryScreen().geometry()
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+
+        print (f"Screen size: {screen_width}x{screen_height}")
+        self.setFixedSize(screen_width, screen_height)
 
         self.expanded = False  # Start in compact mode
 
         # Button for expanded mode
         self.button = QPushButton("Click Me", self)
         self.button.move(100, 80)
-        self.button.clicked.connect(lambda: print("Button clicked"))
+        self.button.clicked.connect(lambda: (
+            print("Button clicked"),
+            setattr(self, 'expanded', False),
+            self.apply_compact_mode()
+        ))
         self.button.hide()  # Hidden in compact mode
 
         self.apply_compact_mode()
@@ -59,10 +68,6 @@ class ToggleWindow(QWidget):
         if not self.expanded and QRect(0, 0, 10, 10).contains(event.pos()):
             self.expanded = True
             self.apply_expanded_mode()
-        elif self.expanded:
-            # Toggle back to compact mode on any click in expanded state
-            self.expanded = False
-            self.apply_compact_mode()
 
 
 if __name__ == "__main__":
