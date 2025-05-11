@@ -10,7 +10,7 @@ nameVenv = ""
 nameExists = False
 
 debug = True
-debugLevel = 4
+debugLevel = 5
 
 venvInstall = []
 venvExists = False
@@ -30,13 +30,40 @@ def debugLog(message, *args):
 
 # ----------------------------------------------------------------------------
 
-def generateWebVenv():
-    installer = os.path.join(os.path.dirname(__file__), "installer", "web.txt")
-    return generateVenv("web", installer)
+def generateWebDjangoVenv():
+    installer = os.path.join(os.path.dirname(__file__), "installer", "web-django.txt")
+    return generateVenv("web-django", installer)
+
+def generateWebFastApiVenv():
+    installer = os.path.join(os.path.dirname(__file__), "installer", "web-fastapi.txt")
+    return generateVenv("web-fastapi", installer)
 
 def generateDesktopVenv():
-    installer = os.path.join(os.path.dirname(__file__), "installer", "desktop.txt")
-    return generateVenv("desktop", installer)
+    global venvExists, venvPath, nameVenv
+    packFile = readFile(os.path.join(os.path.dirname(__file__), "installer", "desktop.txt"))
+
+    if packFile is None:
+        generalLog("No packages to install")
+        return -1
+    
+    debugLog("Packages to install: %s", packFile)
+
+    venvRet = generateVenv(nameVenv)
+
+    if venvRet != 0:
+        generalLog("Failed to create virtual environment")
+        return -1
+    else:
+        os.system(f"source {venvPath}/bin/activate")
+        generalLog("Virtual environment created successfully")
+
+    packRet = installPackages(packFile)
+
+    if packRet != 0:
+        generalLog("Failed to install packages")
+        return -1
+
+    return 0
 
 def generateMobileVenv():
     installer = os.path.join(os.path.dirname(__file__), "installer", "mobile.txt")
@@ -50,7 +77,9 @@ def generateAdditionalPackages():
     
     return None
 
-def generateVenv(name, location):
+# ----------------------------------------------------------------------------
+
+def generateVenv(name):
     global venvExists, venvPath
     
     # Create the virtual environment
@@ -65,13 +94,14 @@ def generateVenv(name, location):
 
     if ret != 0:
         generalLog("Failed to create virtual environment")
-        return
+
+        return ret
     else:
         generalLog("Virtual environment created successfully")
         venvExists = True
         venvPath = venv_path
 
-    return
+    return ret
 
 # ----------------------------------------------------------------------------
 
@@ -80,7 +110,7 @@ def readFile(file_path):
 
     if not os.path.isfile(file_path):
         generalLog("File not found: %s", file_path)
-        return False
+        return None
 
     with open(file_path, encoding="utf-8") as f:
         lines = f.read().splitlines()
@@ -88,7 +118,7 @@ def readFile(file_path):
 
     if not packages:
         generalLog("No packages to install in %s", file_path)
-        return True
+        return None
 
     return packages
 
@@ -105,13 +135,9 @@ def installPackages(packages, venv_dir=None):
 
     generalLog("Running command: %s", " ".join(cmd))
 
-    retcode = subprocess.call(cmd)
-    if retcode == 0:
-        generalLog("Successfully installed packages")
-        return True
-    else:
-        generalLog("pip install returned code %d", retcode)
-        return False
+    #retcode = subprocess.call(cmd)
+
+    return -1#retcode
     
 # ----------------------------------------------------------------------------
 
@@ -152,10 +178,10 @@ def transformArgs(args):
 
     generalLog("Arguments: " + str(argList))
 
-
+# ----------------------------------------------------------------------------
 
 def initWorkspace(args):
-    global venvExists
+    global venvExists, nameVenv, nameExists
     
     if len(args) == 0:
         generalLog("No arguments provided")
@@ -172,25 +198,25 @@ def initWorkspace(args):
             nameExists = True
             generalLog("Name: %s", nameVenv)
 
-    if nameExists:
+    if nameExists :
         generalLog("Name exists")
-        generateVenv(nameVenv, "/app-manager/pvenv")
     else:
         generalLog("Name does not exist")
-        exit(-1)
-
-    if venvExists is False:
-        generalLog("Failed to generate venv")
         exit(-1)
 
     for arg in argList:
         pos = argList.index(arg)
 
-        if arg == "--web":
-            generateWebVenv()
+        if arg == "--webd":
+            generateWebDjangoVenv()
+
+        elif arg == "--webf":
+            generateWebFastApiVenv()
 
         elif arg == "--desktop":
-            generateDesktopVenv()
+            if generateDesktopVenv() == -1:
+                generalLog("Failed to generate desktop venv")
+                exit(-1)
         
         elif arg == "--mobile":
             generateMobileVenv()
@@ -199,7 +225,6 @@ def initWorkspace(args):
             generateAuthVenv()
         
         elif arg == "--all":
-            generateWebVenv()
             generateDesktopVenv()
             generateMobileVenv()
             generateAuthVenv()
