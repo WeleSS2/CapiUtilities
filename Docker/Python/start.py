@@ -75,20 +75,27 @@ def generateVenv(name, location):
 
 # ----------------------------------------------------------------------------
 
-def installPackagesFromFile(installer_file, venv_dir=None):
-    generalLog("Installing packages from %s", installer_file)
+def readFile(file_path):
+    generalLog("Reading file: %s", file_path)
 
-    if not os.path.isfile(installer_file):
-        generalLog("File not found: %s", installer_file)
+    if not os.path.isfile(file_path):
+        generalLog("File not found: %s", file_path)
         return False
 
-    with open(installer_file, encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         lines = f.read().splitlines()
     packages = [line for line in lines if line and not line.startswith("#")]
 
     if not packages:
-        generalLog("No packages to install in %s", installer_file)
+        generalLog("No packages to install in %s", file_path)
         return True
+
+    return packages
+
+# ----------------------------------------------------------------------------
+
+def installPackages(packages, venv_dir=None):
+    generalLog("Installing packages: %s", packages)
 
     if venv_dir:
         pip_executable = os.path.join(venv_dir, "bin", "pip")
@@ -100,12 +107,12 @@ def installPackagesFromFile(installer_file, venv_dir=None):
 
     retcode = subprocess.call(cmd)
     if retcode == 0:
-        generalLog("Successfully installed packages from %s", installer_file)
+        generalLog("Successfully installed packages")
         return True
     else:
         generalLog("pip install returned code %d", retcode)
         return False
-
+    
 # ----------------------------------------------------------------------------
 
 def transformArgs(args):
