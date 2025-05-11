@@ -1,5 +1,8 @@
 docker container prune -f
-docker rmi python-test
+docker rmi -f python-test
 docker build -t python-test .
-docker container create -i -t --name python python-test
-docker container start --attach -i python
+docker run -it --rm \
+    --env DISPLAY=$DISPLAY \
+    --volume /tmp/.X11-unix:/tmp/.X11-unix \
+    --name python \
+    python-test

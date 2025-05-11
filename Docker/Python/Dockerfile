@@ -10,11 +10,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     python3-venv \
     ca-certificates \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/* \
+    libgl1 \
+    libegl1 \
+    libxkbcommon-x11-0 \
+    libxcb1 \
+    libxcb-render0 \
+    libxcb-shape0 \
+    libxcb-shm0 \
+    libxcb-cursor0 \
+    libxcb-xinerama0 \
+    libxcb-icccm4 \
+    libxcb-keysyms1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxrandr2 \
+    libxdamage1 \
+    libxfixes3 \
+    libfontconfig1 \
+    libglib2.0-0 \
+    libdbus-1-3 \
+ && apt-get clean && rm -rf /var/lib/apt/lists/* \
  && mkdir -p /app-manager/pvenv \
  && mkdir -p /app-manager/apps \
  && touch /app-manager/config.json
+
 
 
 COPY installer/* /app-manager/installer/
