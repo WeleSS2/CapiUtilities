@@ -1,8 +1,7 @@
-
 import os
 import sys
 import json
-import subprocess
+#import subprocess
 
 argList = []
 
@@ -49,13 +48,10 @@ def generateDesktopVenv():
     debugLog("Packages to install: %s", packFile)
 
     venvRet = generateVenv(nameVenv)
-
+    
     if venvRet != 0:
         generalLog("Failed to create virtual environment")
         return -1
-    else:
-        os.system(f"source {venvPath}/bin/activate")
-        generalLog("Virtual environment created successfully")
 
     packRet = installPackages(packFile)
 
@@ -124,20 +120,32 @@ def readFile(file_path):
 
 # ----------------------------------------------------------------------------
 
-def installPackages(packages, venv_dir=None):
+def installPackages(packages):
+    global venvExists, venvPath
     generalLog("Installing packages: %s", packages)
 
-    if venv_dir:
-        pip_executable = os.path.join(venv_dir, "bin", "pip")
-        cmd = [pip_executable, "install"] + packages
-    else:
-        cmd = [sys.executable, "-m", "pip", "install"] + packages
+    if not venvExists:
+        generalLog("Virtual environment does not exist")
+        return -1
+    
+    if not os.path.isdir(venvPath):
+        generalLog("Virtual environment path does not exist")
+        return -1
+    
+    venv_dir = os.path.join(venvPath, "bin", "python")
+
+    package_str = " ".join(packages)
+
+    cmd = f"{venv_dir} -m pip install {package_str}"
+
+    generalLog("Running command: %s", cmd)
+    retcode = os.system(cmd)
 
     generalLog("Running command: %s", " ".join(cmd))
 
-    #retcode = subprocess.call(cmd)
+    retcode = os.system(cmd)
 
-    return -1#retcode
+    return retcode
     
 # ----------------------------------------------------------------------------
 
