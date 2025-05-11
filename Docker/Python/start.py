@@ -47,10 +47,12 @@ def generateAuthVenv():
     return generateVenv("auth", installer)
 
 def generateAdditionalPackages():
-    installer = os.path.join(os.path.dirname(__file__), "installer", "add.txt")
-    return installPackagesFromFile(installer)
+    
+    return None
 
 def generateVenv(name, location):
+    global venvExists, venvPath
+    
     # Create the virtual environment
     venv_path = os.path.join("/app-manager/pvenv/", name.replace(" ", "_"))
     python_executable = sys.executable
@@ -59,13 +61,15 @@ def generateVenv(name, location):
     generalLog("Command: %s", command)
 
     # Run the command to create the virtual environment
-    if os.system(command) != 0:
+    ret = os.system(command)
+
+    if ret != 0:
         generalLog("Failed to create virtual environment")
         return
     else:
         generalLog("Virtual environment created successfully")
         venvExists = True
-        venvPath.append(venv_path)
+        venvPath = venv_path
 
     return
 
@@ -144,6 +148,8 @@ def transformArgs(args):
 
 
 def initWorkspace(args):
+    global venvExists
+    
     if len(args) == 0:
         generalLog("No arguments provided")
         return
