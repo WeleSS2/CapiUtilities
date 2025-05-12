@@ -4,6 +4,8 @@ WORKDIR /app-manager
 
 COPY . /app-manager
 
+ARG PROFILE=default
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     python3 \
@@ -35,13 +37,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && touch /app-manager/config.json
 
 
-
+ 
 COPY installer/* /app-manager/installer/
 
 COPY start.py /app-manager
 
 COPY config.json /app-manager
 
-RUN chmod +x /app-manager/start.py
+ENV VENV_PATH=/app-manager/pvenv
+RUN python3 -m venv $VENV_PATH
+ENV PATH="$VENV_PATH/bin:$PATH"
+
+RUN pip install --upgrade pip \
+    && if [ -f installer/${PROFILE}.txt ]; then \
+         pip install --no-cache-dir -r installer/${PROFILE}.txt; \
+       fi
+
+EXPOSE 8000
 
 CMD ["bash"]
