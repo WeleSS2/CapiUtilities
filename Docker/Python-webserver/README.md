@@ -1,21 +1,21 @@
 # This file is documentation for Python-webserver
 
-# Prerequires - Python environment
+# 📦 Prerequires - Python environment
 
 * Python v3.10.17
 * pip v25.1.1
 
-# Python depedencies (in requirements.txt)
+# 📦 Python depedencies (in requirements.txt)
 
 * Django v5.2.1
 
-# How to by docker compose?
+# 🚀 How to run via docker compose?
 
 ```bash
 docker compose up
 ```
 
-# How to run manually?
+# 🚀 How to run manually?
 
 ## Build docker image
 
