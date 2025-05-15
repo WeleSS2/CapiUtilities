@@ -7,6 +7,9 @@ from PySide6.QtWidgets import QApplication, QWidget, QPushButton
 from PySide6.QtCore import Qt, QRect
 from PySide6.QtGui import QPainter, QColor, QRegion, QGuiApplication
 
+import os
+import json
+from pysite.q_widget import q_widget
 
 class ToggleWindow(QWidget):
     def __init__(self):
@@ -69,9 +72,40 @@ class ToggleWindow(QWidget):
             self.expanded = True
             self.apply_expanded_mode()
 
+# -------------------------------------------------------------------------
+
+def load_plugins(plugins_dir='plugins'):
+    """
+    Load plugins from the specified directory.
+    Each plugin should be a directory containing a config.json file.
+    """
+    if not os.path.isdir(plugins_dir):
+        print(f"[load_plugins] Plugins directory not found: {plugins_dir}")
+        return []
+
+    widgets = []
+    for name in os.listdir(plugins_dir):
+        path = os.path.join(plugins_dir, name)
+        if os.path.isdir(path):
+            cfg = os.path.join(path, 'config.json')
+            if os.path.isfile(cfg):
+                try:
+                    with open(cfg, 'r', encoding='utf-8') as f:
+                        config = json.load(f)
+                    widget = q_widget(**config)
+                    widgets.append(widget)
+                    print(f"[load_plugins] Load plugin '{name}': {widget}")
+                except Exception as e:
+                    print(f"[load_plugins] Failed to load plugin '{name}': {e}")
+            else:
+                print(f"[load_plugins] config.json not found for plugin '{name}', skip.")
+    return widgets
 
 if __name__ == "__main__":
     app = QApplication([])
     window = ToggleWindow()
     window.show()
+
+    load_plugins(os.path.join(os.path.dirname(__file__), 'plugins'))
+
     app.exec()
