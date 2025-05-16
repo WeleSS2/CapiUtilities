@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 
 
-COPY installer/* /app-manager/installer/
+COPY requirements.txt /app-manager/installer/
 
 COPY start.py /app-manager
 
