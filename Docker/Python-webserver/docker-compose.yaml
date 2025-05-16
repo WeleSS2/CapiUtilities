@@ -1,0 +1,8 @@
+version: '3.9'
+services:
+  web:
+    build:
+      target: web-server
+    container_name: django-server
+    ports:
+      - "8000:8000"
