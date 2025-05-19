@@ -1,0 +1,5 @@
+        self.close_button = QPushButton("X", self)
+        self.close_button.setFixedSize(40, 30)
+        self.close_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.close_button.setToolTip("Close")
+        self.close_button.clicked.connect(self.close)
