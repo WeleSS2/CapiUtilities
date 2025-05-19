@@ -1,5 +1,167 @@
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QPushButton, QWidget,
+    QHBoxLayout, QVBoxLayout, QSizePolicy, QCheckBox,
+    QTableWidget, QTableWidgetItem, QAbstractItemView, QHeaderView
+)
+from PySide6.QtGui import QIcon, QGuiApplication
+from PySide6.QtCore import Qt, QSize, QTimer
+import sys
+import os
+
+global base_Width, base_Height
+
+class GameList(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        layout = QHBoxLayout()
+        layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.setLayout(layout)
+
+        # Dummy game icons
+        game_icons = ["game1.png", "game2.png", "game3.png"]
+
+        for icon_path in game_icons:
+            btn = QPushButton()
+            btn.setFixedSize(64, 64)
+            btn.setIcon(QIcon(icon_path))
+            btn.setIconSize(QSize(64, 64))
+            btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+            btn.clicked.connect(lambda checked=False, p=icon_path: self.run_game(p))
+            layout.addWidget(btn)
+
+    def run_game(self, game_icon):
+        print(f"TODO: Launch game with icon {game_icon}")
+
+
+class ModsList(QTableWidget):
+    def __init__(self, parent=None):
+        super().__init__(0, 6, parent)
+        self.setSelectionMode(QAbstractItemView.NoSelection)
+        self.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.horizontalHeader().setVisible(False)
+        self.verticalHeader().setVisible(False)
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.setStyleSheet("QTableWidget { background-color: #222; color: white; }")
+
+        self.populate_rows(30)
+
+    def populate_rows(self, count):
+        for i in range(count):
+            self.insertRow(i)
+
+            # 1st column - Checkbox
+            checkbox = QCheckBox()
+            checkbox.setChecked(False)
+            checkbox.setStyleSheet("QCheckBox::indicator { width: 16px; height: 16px; }")
+            self.setCellWidget(i, 0, checkbox)
+
+            # Middle columns - placeholders
+            for j in range(1, 5):
+                item = QTableWidgetItem(f"Column {j + 1}")
+                item.setTextAlignment(Qt.AlignCenter)
+                self.setItem(i, j, item)
+
+            # Last column - small button
+            btn = QPushButton("⇅")
+            btn.setFixedSize(30, 25)
+            btn.clicked.connect(lambda _, row=i: self.move_row(row))
+            self.setCellWidget(i, 5, btn)
+
+    def move_row(self, row_index):
+        print(f"TODO: Move row {row_index}")
+
+    def mousePressEvent(self, event):
+        item = self.itemAt(event.pos())
+        if not item:
+            return super().mousePressEvent(event)
+
+        row = item.row()
+        column = item.column()
+
+        if event.button() == Qt.RightButton:
+            print(f"TODO: Right-click action on row {row}, column {column}")
+            # TODO: Open details window here
+        elif event.button() == Qt.LeftButton and column != 5:
+            checkbox = self.cellWidget(row, 0)
+            if isinstance(checkbox, QCheckBox):
+                checkbox.setChecked(not checkbox.isChecked())
+
+        return super().mousePressEvent(event)
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Fullscreen Game Launcher")
+
+        # Central layout
+        self.central = QWidget(self)
+        self.setCentralWidget(self.central)
+        self.main_layout = QVBoxLayout(self.central)
+
+        # Game list (fixed height: 64px)
+        self.game_list = GameList()
+
+        gameListMargin = 10
+        self.game_list.setFixedHeight(64 + gameListMargin)
+        self.main_layout.addWidget(self.game_list)
+
+        # Mods list (expand to fill remaining space)
+        self.mods_list = ModsList()
+        self.mods_list.setFixedWidth(base_Height * 60)
+        self.main_layout.addWidget(self.mods_list)
+
+
+        # Close button
         self.close_button = QPushButton("X", self)
         self.close_button.setFixedSize(40, 30)
-        self.close_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.close_button.setToolTip("Close")
         self.close_button.clicked.connect(self.close)
+        self.close_button.setStyleSheet("""
+            QPushButton {
+                background-color: red;
+                color: white;
+                font-weight: bold;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: darkred;
+            }
+        """)
+        self.close_button.setVisible(False)
+
+        QTimer.singleShot(0, self.show_fullscreen_with_button)
+
+    def show_fullscreen_with_button(self):
+        self.showFullScreen()
+        self.position_close_button()
+        self.close_button.setVisible(True)
+        self.close_button.raise_()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.position_close_button()
+
+    def position_close_button(self):
+        margin = 10
+        x = self.width() - self.close_button.width() - margin
+        y = margin
+        self.close_button.move(x, y)
+        self.close_button.raise_()
+
+def calculate_one_percent_of_screen():
+    global base_Width, base_Height
+    screen_geometry = QGuiApplication.primaryScreen().geometry()
+    screen_width = screen_geometry.width()
+    screen_height = screen_geometry.height()
+    
+    base_Width = screen_width * 0.01
+    base_Height = screen_height * 0.01
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    calculate_one_percent_of_screen()
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())

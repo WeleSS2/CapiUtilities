@@ -16,6 +16,10 @@ class GameList(QWidget):
 
         layout = QHBoxLayout()
         layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+
+        # ✨ Add this:
+        layout.setContentsMargins(0, 0, 0, 0)
+
         self.setLayout(layout)
 
         # Dummy game icons
@@ -34,6 +38,7 @@ class GameList(QWidget):
         print(f"TODO: Launch game with icon {game_icon}")
 
 
+
 class ModsList(QTableWidget):
     def __init__(self, parent=None):
         super().__init__(0, 6, parent)
@@ -44,7 +49,7 @@ class ModsList(QTableWidget):
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.setStyleSheet("QTableWidget { background-color: #222; color: white; }")
 
-        self.populate_rows(30)  # ⬅️ now adds 30 rows
+        self.populate_rows(30)
 
     def populate_rows(self, count):
         for i in range(count):
@@ -109,7 +114,6 @@ class MainWindow(QMainWindow):
 
         # Mods list (expand to fill remaining space)
         self.mods_list = ModsList()
-        self.mods_list.setFixedWidth(base_Height * 60)
         self.main_layout.addWidget(self.mods_list)
 
 
