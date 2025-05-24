@@ -1,47 +1,46 @@
-FROM debian:trixie-slim
+FROM debian:bookworm-slim
 
-WORKDIR /app-manager
-
-COPY . /app-manager
+WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash \
     python3 \
     python3-pip \
     python3-venv \
-    ca-certificates \
-    libgl1 \
-    libegl1 \
-    libxkbcommon-x11-0 \
-    libxcb1 \
-    libxcb-render0 \
-    libxcb-shape0 \
-    libxcb-shm0 \
-    libxcb-cursor0 \
-    libxcb-xinerama0 \
-    libxcb-icccm4 \
-    libxcb-keysyms1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxrandr2 \
-    libxdamage1 \
-    libxfixes3 \
-    libfontconfig1 \
-    libglib2.0-0 \
-    libdbus-1-3 \
- && apt-get clean && rm -rf /var/lib/apt/lists/* \
- && mkdir -p /app-manager/pvenv \
- && mkdir -p /app-manager/apps \
- && touch /app-manager/config.json
+    libfontconfig1-dev \
+    libfreetype-dev \
+    libgtk-3-dev \
+    libx11-dev \
+    libx11-xcb-dev \
+    libxcb-cursor-dev \
+    libxcb-glx0-dev \
+    libxcb-icccm4-dev \
+    libxcb-image0-dev \
+    libxcb-keysyms1-dev \
+    libxcb-randr0-dev \
+    libxcb-render-util0-dev \
+    libxcb-shape0-dev \
+    libxcb-shm0-dev \
+    libxcb-sync-dev \
+    libxcb-util-dev \
+    libxcb-xfixes0-dev \
+    libxcb-xkb-dev \
+    libxcb1-dev \
+    libxext-dev \
+    libxfixes-dev \
+    libxi-dev \
+    libxkbcommon-dev \
+    libxkbcommon-x11-dev \
+    libxrender-dev \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
+COPY requirements.txt .
 
-COPY requirements.txt /app-manager/installer/
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install -r requirements.txt
 
-COPY start.py /app-manager
+COPY ./src .
 
-COPY config.json /app-manager
+##NEED TO ADD PYINSTALLER COMMAND!
 
-RUN chmod +x /app-manager/start.py
-
-CMD ["bash"]

@@ -1,1 +1,0 @@
-initialized = true/false   Did current docker image and workspace was initialized
