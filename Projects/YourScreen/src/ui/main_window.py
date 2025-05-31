@@ -2,7 +2,7 @@ import sys
 import os
 import glob
 
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget,
+from PySide6.QtWidgets import (QMainWindow, QWidget,
 QVBoxLayout, QHBoxLayout, QScrollArea, QCheckBox, QFrame, QLabel)
 
 from PySide6.QtCore import Qt, QProcess, Signal, QTimer, QSize
