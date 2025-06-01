@@ -76,17 +76,12 @@ class MainWindow(QMainWindow):
         central.setFixedSize(400, 600)
         self.setCentralWidget(central)
 
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        assets_dir = os.path.join(script_dir, "assets")
-        image_path = None
-        if os.path.isdir(assets_dir):
-            for pattern in ["*.gif", "*.png", "*.jpg", "*.jpeg", "*.bmp"]:
-                files = glob.glob(os.path.join(assets_dir, pattern))
-                if files:
-                    image_path = files[0]
-                    break
-
-        bg = RoundedBackground(image_path=image_path, radius=15, overlay_opacity=0.4, parent=central)
+        bg = RoundedBackground(
+            image_path=None,
+            radius=15,
+            overlay_opacity=0.4,
+            parent=central
+        )
         bg.setGeometry(0, 0, 400, 600)
         bg.lower()
 
