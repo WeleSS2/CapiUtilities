@@ -1,0 +1,11 @@
+1. Chmura oracle do pingowania
+2. Test wyslanie stringa i zapisanie w chmurze
+3. Obsluga json do metadanych
+4. Creator metadanych
+5. Wysylanie metadanych i zapiswyanie na serwerze
+6. Sprawdzanie metadanych runtime i request na serwer
+7. Example pluginu z werfikacja:
+- Stworz metadane i wyslij na cloud
+- Otrzymaj signature
+- Opublicznij (Miej lokalnie bez steam) plugin
+- Uruchom plugin i sprawdz metadane runtime 

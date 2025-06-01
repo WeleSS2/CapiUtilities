@@ -1,0 +1,29 @@
+//Every plugin need to have file metadata.json
+
+{
+  "pluginID": "com.example.myplugin",          // (1) A unique identifier or namespace for this plugin
+  "name": "Example Plugin",
+  "version": "1.2.0",                           // (2) Semantic version of this plugin release
+  "creationTime": 123456789,
+  "updateTime": 987654321,
+  "author": "Alice Developer",                  // (3) Who created or maintains it
+  "coreAPIVersion": 3,                          // (4) Which plugin-API revision(s) this plugin targets
+  "minAppVersion": "2.5.0",                     // (5) Ref: minimum version of the main app/core it’s compatible with
+  "signature": "QkFTRTY0LWVuY29kZWQtZGVyaXZlZA==", // (6) Digital signature over metadata and/or plugin files
+  "description": "Adds a custom widget for X",  // (7) (Optional) Short human-readable summary
+  "maxAppVersion": "3.9.0",                     // (8) (Optional) Upper bound if you anticipate major-version breaks
+  "permissions": [                              // (9) (Optional) Declared “capabilities” the plugin might request
+    "filesystem.read",
+    "network.http"
+  ],
+  "dependencies": [                             // (10) (Optional) Any other plugins or Python packages it needs at runtime
+    { "name": "requests", "version": ">=2.28.0" },
+    { "name": "other-plugin", "version": "^1.1.0" }
+  ],
+  "platform": [                                 // (11) (Optional) Which OS or architectures this plugin has been tested on
+    "windows",
+    "linux",
+    "macos"
+  ],
+  "homepage": "https://example.com/myplugin"   // (12) (Optional) Link to docs or repo
+}
